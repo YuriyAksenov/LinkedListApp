@@ -215,7 +215,10 @@ namespace LinkedList.Test
         {
             _linkedList.Added += delegate (object sender, LinkedListEventArgs e)
             {
-                Assert.Pass();
+                if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
             };
 
             _linkedList.Add(5);
@@ -226,7 +229,10 @@ namespace LinkedList.Test
         {
             _linkedList.Cleared += delegate (object sender, LinkedListEventArgs e)
             {
-                Assert.Pass();
+                if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
             };
 
             _linkedList.Clear();
@@ -237,7 +243,10 @@ namespace LinkedList.Test
         {
             _linkedList.Removed += delegate (object sender, LinkedListEventArgs e)
             {
-                Assert.Pass();
+                if(ReferenceEquals(null,sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
             };
 
             _linkedList.Remove(5);

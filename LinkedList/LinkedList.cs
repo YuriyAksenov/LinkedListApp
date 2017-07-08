@@ -5,11 +5,25 @@ using System.Collections.Generic;
 
 namespace LinkedList
 {
+    /// <summary>
+    /// Provides data for the LinkedList event.
+    /// </summary>
     public class LinkedListEventArgs : EventArgs
     {
+        /// <summary>
+        /// Gets the date whether method was executed.
+        /// </summary>
         public bool IsExecuted { get; }
+        /// <summary>
+        /// Gets the message with specified notes about method.
+        /// </summary>
         public string Message { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the LinkedListEventArgs class, specifying the executing and message.
+        /// </summary>
+        /// <param name="isExecuted"></param>
+        /// <param name="message"></param>
         public LinkedListEventArgs(bool isExecuted, string message)
         {
             IsExecuted = isExecuted;
@@ -17,9 +31,16 @@ namespace LinkedList
         }
     }
 
-
+    /// <summary>
+    /// Represents a node in a LinkedList T .This class cannot be inherited.
+    /// </summary>
+    /// <typeparam name="T">Specifies the element type of the linked list.</typeparam>
     public sealed class LinkedListNode<T>
     {
+        /// <summary>
+        /// Initializes a new instance of the LinkedListNode T  class, containing the specified value.
+        /// </summary>
+        /// <param name="value">The value to contain in the LinkedListNode T .</param>
         public LinkedListNode(T value) : this(value, null, null, null) { }
         internal LinkedListNode(T value, LinkedListNode<T> next, LinkedListNode<T> previous, LinkedList<T> list)
         {
@@ -28,16 +49,34 @@ namespace LinkedList
             this.Next = next;
             this.Previous = previous;
         }
+        /// <summary>
+        /// Gets the LinkedList T  that the LinkedListNode T  belongs to.
+        /// </summary>
         public LinkedList<T> List { get; internal set; }
+        /// <summary>
+        /// Gets the value contained in the node.
+        /// </summary>
         public T Value { get; set; }
+        /// <summary>
+        /// Gets the next node in the LinkedList T .
+        /// </summary>
         public LinkedListNode<T> Next { get; internal set; }
+        /// <summary>
+        /// Gets the previous node in the LinkedList T .
+        /// </summary>
         public LinkedListNode<T> Previous { get; internal set; }
     }
 
 
-
+    /// <summary>
+    /// Represents a doubly linked list.
+    /// </summary>
+    /// <typeparam name="T">Specifies the element type of the linked list.</typeparam>
     public sealed class LinkedList<T> : IEnumerable<T>, ICollection<T>
     {
+        /// <summary>
+        /// Initializes a new instance of the LinkedList T  class that is empty.
+        /// </summary>
         public LinkedList()
         {
             this.Count = 0;
@@ -45,13 +84,34 @@ namespace LinkedList
             this.Last = null;
         }
 
+        /// <summary>
+        /// Gets the number of nodes actually contained in the LinkedList T 
+        /// </summary>
         public int Count { get; private set; }
+        /// <summary>
+        /// Gets the first node of the LinkedList T .
+        /// </summary>
         public LinkedListNode<T> First { get; private set; }
+        /// <summary>
+        /// Gets the last node of the LinkedList T .
+        /// </summary>
         public LinkedListNode<T> Last { get; private set; }
+        /// <summary>
+        /// Gets a value indicating whether the LinkedList T  is read-only.
+        /// </summary>
         public bool IsReadOnly => false;
 
+        /// <summary>
+        /// Occurs directly after Add is called, and can be handled to get information about executed and the message about executing.
+        /// </summary>
         public event EventHandler<LinkedListEventArgs> Added;
+        /// <summary>
+        /// Occurs directly after Remove is called, and can be handled to get information about executed and the message about executing.
+        /// </summary>
         public event EventHandler<LinkedListEventArgs> Removed;
+        /// <summary>
+        /// Occurs directly after Clear is called, and can be handled to get information about executed and the message about executing.
+        /// </summary>
         public event EventHandler<LinkedListEventArgs> Cleared;
 
         /*
@@ -110,6 +170,10 @@ namespace LinkedList
         //}
         */
 
+        /// <summary>
+        /// Adds a new node containing the specified value at the end of the LinkedList T .
+        /// </summary>
+        /// <param name="value">The value to add at the end of the LinkedList T .</param>
         public void Add(T value)
         {
             LinkedListNode<T> newNode = new LinkedListNode<T>(value, null, Last, this);
@@ -130,6 +194,9 @@ namespace LinkedList
             return;
         }
 
+        /// <summary>
+        /// Removes all nodes from the LinkedList T .
+        /// </summary>
         public void Clear()
         {
             if (ReferenceEquals(null, First))
@@ -164,6 +231,11 @@ namespace LinkedList
             return;
         }
 
+        /// <summary>
+        /// Determines whether a value is in the LinkedList T .
+        /// </summary>
+        /// <param name="value">The value to locate in the LinkedList T .</param>
+        /// <returns>true if value is found in the LinkedList T ; otherwise, false.</returns>
         public bool Contains(T value)
         {
             //if (ReferenceEquals(value, null)) throw new ArgumentNullException("value", "A null reference is passed to a method.");
@@ -196,6 +268,11 @@ namespace LinkedList
             return false;
         }
 
+        /// <summary>
+        /// Copies the entire LinkedList T  to a compatible one-dimensional Array, starting at the specified index of the target array.
+        /// </summary>
+        /// <param name="array">The one-dimensional Array that is the destination of the elements copied from LinkedList T .</param>
+        /// <param name="index">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int index)
         {
             if (ReferenceEquals(array, null)) throw new ArgumentNullException("array", "A null reference is passed to a method.");
@@ -219,6 +296,11 @@ namespace LinkedList
             array[index] = iNode.Value;
         }
 
+        /// <summary>
+        /// Removes the first occurrence of the specified value from the LinkedList T .
+        /// </summary>
+        /// <param name="value">The value to remove from the LinkedList T .</param>
+        /// <returns>true if the element containing value is successfully removed; otherwise, false.</returns>
         public bool Remove(T value)
         {
             if (ReferenceEquals(null, First))
@@ -289,6 +371,10 @@ namespace LinkedList
             return false;
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the LinkedList T .
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
             if (ReferenceEquals(First, null)) yield break;
@@ -302,11 +388,20 @@ namespace LinkedList
             yield return Last.Value;
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds a new node containing the specified value before the specified existing value in the LinkedList T .
+        /// </summary>
+        /// <param name="beforeValue">The value before which to insert a new LinkedListNode T  containing value.</param>
+        /// <param name="value">The value to add to the LinkedList T .</param>
         public void Insert(T beforeValue, T value)
         {
             if (ReferenceEquals(First, null)) return;
