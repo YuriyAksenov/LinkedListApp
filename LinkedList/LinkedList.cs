@@ -32,6 +32,48 @@ namespace LinkedList
     }
 
     /// <summary>
+    /// Provides data for the LinkedList T event with adding value T.
+    /// </summary>
+    public class AddedLinkedListEventArgs<T> : LinkedListEventArgs
+    {
+        /// <summary>
+        /// Adding value to the LinkedList T.
+        /// </summary>
+        public T Value { get; }
+        /// <summary>
+        /// Initializes a new instance of the AddedLinkedListEventArgs class, specifying the executing and message and containing the specified value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="isExecuted"></param>
+        /// <param name="message"></param>
+        public AddedLinkedListEventArgs(T value, bool isExecuted, string message) : base(isExecuted,message)
+        {
+            Value = value;
+        }
+    }
+
+    /// <summary>
+    /// Provides data for the LinkedList T event with removing value T.
+    /// </summary>
+    public class RemovedLinkedListEventArgs<T> : LinkedListEventArgs
+    {
+        /// <summary>
+        /// Removing value from the LinkedList T.
+        /// </summary>
+        public T Value { get; }
+        /// <summary>
+        /// Initializes a new instance of the RemovedLinkedListEventArgs class, specifying the executing and message and containing the specified value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="isExecuted"></param>
+        /// <param name="message"></param>
+        public RemovedLinkedListEventArgs(T value, bool isExecuted, string message) : base(isExecuted, message)
+        {
+            Value = value;
+        }
+    }
+
+    /// <summary>
     /// Represents a node in a LinkedList T .This class cannot be inherited.
     /// </summary>
     /// <typeparam name="T">Specifies the element type of the linked list.</typeparam>
@@ -42,6 +84,13 @@ namespace LinkedList
         /// </summary>
         /// <param name="value">The value to contain in the LinkedListNode T .</param>
         public LinkedListNode(T value) : this(value, null, null, null) { }
+
+        /// <summary>
+        /// Initializes a new instance of the LinkedListEventArgs class, specifying the executing and message and containing the specified value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="isExecuted"></param>
+        /// <param name="message"></param>
         internal LinkedListNode(T value, LinkedListNode<T> next, LinkedListNode<T> previous, LinkedList<T> list)
         {
             this.Value = value;
@@ -104,71 +153,15 @@ namespace LinkedList
         /// <summary>
         /// Occurs directly after Add is called, and can be handled to get information about executed and the message about executing.
         /// </summary>
-        public event EventHandler<LinkedListEventArgs> Added;
+        public event EventHandler<AddedLinkedListEventArgs<T>> Added;
         /// <summary>
         /// Occurs directly after Remove is called, and can be handled to get information about executed and the message about executing.
         /// </summary>
-        public event EventHandler<LinkedListEventArgs> Removed;
+        public event EventHandler<RemovedLinkedListEventArgs<T>> Removed;
         /// <summary>
         /// Occurs directly after Clear is called, and can be handled to get information about executed and the message about executing.
         /// </summary>
         public event EventHandler<LinkedListEventArgs> Cleared;
-
-        /*
-        //public int Count
-        //{
-        //    get
-        //    {
-        //        if (ReferenceEquals(null,first)) return 0;
-
-        //        Node iNode = first;
-        //        int count = 1;
-        //        while (!ReferenceEquals(iNode, last))
-        //        {
-        //            count++;
-        //            iNode = iNode.Next;
-        //        }
-        //        return count;
-        //    }
-        //}
-
-        //public T First()
-        //{
-        //    if (ReferenceEquals(first, null)) throw new InvalidOperationException("LinkedList is empty");
-
-        //    if(ReferenceEquals(first,last))
-        //    {
-        //        Node returnedNode = first;
-        //        first = null;
-        //        last = null;
-        //        return returnedNode.Value;
-        //    }
-
-        //    Node returnedFirst = first;
-        //    first.Next.Previous = null;
-        //    first = first.Next;
-
-        //    return returnedFirst.Value;   
-        //}
-
-        //public T Last()
-        //{
-        //    if (ReferenceEquals(last, null)) throw new InvalidOperationException("LinkedList is empty");
-        //    if (ReferenceEquals(first, last))
-        //    {
-        //        Node returnedNode = first;
-        //        first = null;
-        //        last = null;
-        //        return returnedNode.Value;
-        //    }
-
-        //    Node returnedLast = last;
-        //    last.Previous.Next = null;
-        //    last = last.Previous;
-
-        //    return returnedLast.Value;
-        //}
-        */
 
         /// <summary>
         /// Adds a new node containing the specified value at the end of the LinkedList T .
@@ -178,19 +171,18 @@ namespace LinkedList
         {
             LinkedListNode<T> newNode = new LinkedListNode<T>(value, null, Last, this);
 
-
-            if (ReferenceEquals(null, First))
+            if (null == First)
             {
                 First = newNode;
                 Last = newNode;
                 Count = 1;
-                Added?.Invoke(this, new LinkedListEventArgs(true, "The value was added into the LinkedList."));
+                Added?.Invoke(this, new AddedLinkedListEventArgs<T>(value, true, "The value was added into the LinkedList."));
                 return;
             }
             Last.Next = newNode;
             Last = newNode;
             Count++;
-            Added?.Invoke(this, new LinkedListEventArgs(true, "The value was added into the LinkedList."));
+            Added?.Invoke(this, new AddedLinkedListEventArgs<T>(value, true, "The value was added into the LinkedList."));
             return;
         }
 
@@ -199,34 +191,10 @@ namespace LinkedList
         /// </summary>
         public void Clear()
         {
-            if (ReferenceEquals(null, First))
-            {
-                Cleared?.Invoke(this, new LinkedListEventArgs(true, "The LinkedList has been already cleared."));
-                return;
-            }
-
             Count = 0;
-
-            if (ReferenceEquals(First, Last))
-            {
-                First = null;
-                Last = null;
-                Cleared?.Invoke(this, new LinkedListEventArgs(true, "The LinkedList was cleared."));
-                return;
-            }
-
-            LinkedListNode<T> deletedNode = First.Next;
-
-            while (!ReferenceEquals(deletedNode, Last))
-            {
-                deletedNode.Previous.Next = null;
-                deletedNode.Previous = null;
-                deletedNode = deletedNode.Next;
-            }
-            First.Next = null;
             First = null;
-            Last.Previous = null;
             Last = null;
+            
             Cleared?.Invoke(this, new LinkedListEventArgs(true, "The LinkedList was cleared."));
             return;
         }
@@ -238,33 +206,11 @@ namespace LinkedList
         /// <returns>true if value is found in the LinkedList T ; otherwise, false.</returns>
         public bool Contains(T value)
         {
-            //if (ReferenceEquals(value, null)) throw new ArgumentNullException("value", "A null reference is passed to a method.");
-            if (ReferenceEquals(First, null)) return false;
-            if (ReferenceEquals(First, Last))
+            foreach (var item in this)
             {
-
-                if (ReferenceEquals(First.Value, value)) return true;
-                if (First.Value.GetType() != value.GetType()) return false;
-                if (First.Value.Equals(value)) return true;
-                return false;
+                if (Equals(item, value))
+                    return true;
             }
-
-            LinkedListNode<T> iNode = First;
-            while (!ReferenceEquals(iNode, Last))
-            {
-                if (ReferenceEquals(iNode.Value, value)) return true;
-                if (iNode.Value.GetType() != value.GetType())
-                {
-                    iNode = iNode.Next;
-                    continue;
-                }
-                if (iNode.Value.Equals(value)) return true;
-                iNode = iNode.Next;
-            }
-
-            if (ReferenceEquals(Last.Value, value)) return true;
-            if (iNode.Value.GetType() != value.GetType()) return false;
-            if (iNode.Value.Equals(value)) return true;
             return false;
         }
 
@@ -275,25 +221,15 @@ namespace LinkedList
         /// <param name="index">The zero-based index in array at which copying begins.</param>
         public void CopyTo(T[] array, int index)
         {
-            if (ReferenceEquals(array, null)) throw new ArgumentNullException("array", "A null reference is passed to a method.");
+            if (array == null) throw new ArgumentNullException("array", "A null reference is passed to a method.");
             if (index < 0) throw new ArgumentOutOfRangeException();
             if (array.Rank > 1 || (this.Count > array.Length - index)) throw new ArgumentException();
 
-            if (ReferenceEquals(First, null)) return;
-            if (ReferenceEquals(First, Last))
+            foreach (var item in this)
             {
-                array[index] = First.Value;
-            }
-
-            LinkedListNode<T> iNode = First;
-            while (!ReferenceEquals(iNode, Last))
-            {
-                array[index] = iNode.Value;
+                array[index] = item;
                 index++;
-                iNode = iNode.Next;
             }
-
-            array[index] = iNode.Value;
         }
 
         /// <summary>
@@ -303,71 +239,29 @@ namespace LinkedList
         /// <returns>true if the element containing value is successfully removed; otherwise, false.</returns>
         public bool Remove(T value)
         {
-            if (ReferenceEquals(null, First))
-            {
-                Removed?.Invoke(this, new LinkedListEventArgs(false, "The LinkedList is empty. Removing is canceled."));
-                return false;
-            }
+            LinkedListNode<T> matchingNode = FindAMatchingNode(value);
 
-            bool isContain = false;
-
-            LinkedListNode<T> iNode = First;
-            while (!ReferenceEquals(iNode, Last))
-            {
-                if (ReferenceEquals(iNode.Value, value))
-                {
-                    isContain = true;
-                    break;
-                }
-                if (iNode.Value.GetType() != value.GetType())
-                {
-                    iNode = iNode.Next;
-                    continue;
-                }
-                if (iNode.Value.Equals(value))
-                {
-                    isContain = true;
-                    break;
-                }
-                iNode = iNode.Next;
-            }
-
-            if (ReferenceEquals(Last.Value, value) && !isContain) isContain = true;
-            if (iNode.Value.GetType() != value.GetType() && !isContain) isContain = false;
-            if (iNode.Value.Equals(value) && !isContain) isContain = true;
-
-            if (isContain)
+            if (matchingNode != null)
             {
                 Count--;
-                if (ReferenceEquals(iNode, First) && ReferenceEquals(iNode, Last))
-                {
-                    First = null;
-                    Last = null;
-                    return true;
-                }
-                if (ReferenceEquals(iNode, First))
-                {
-                    First.Next.Previous = null;
-                    First = First.Next;
-                    return true;
-                }
-                if (ReferenceEquals(iNode, Last))
-                {
-                    Last.Previous.Next = null;
-                    Last = Last.Previous;
-                    return true;
-                }
+                var prev = matchingNode.Previous;
+                var next = matchingNode.Next;
 
-                iNode.Previous.Next = iNode.Next;
-                iNode.Next.Previous = iNode.Previous;
-                iNode.Previous = null;
-                iNode.Next = null;
-                iNode = null;
-                Removed?.Invoke(this, new LinkedListEventArgs(true, "The passing element was removed."));
+                if (prev == null)
+                    First = next;
+                else
+                    prev.Next = next;
+
+                if (next == null)
+                    Last = prev;
+                else
+                    next.Previous = prev;
+
+                Removed?.Invoke(this, new RemovedLinkedListEventArgs<T>(value, true, "The passing element was deleted."));
                 return true;
             }
 
-            Removed?.Invoke(this, new LinkedListEventArgs(false, "The passing element did not find. Removing is canceled."));
+            Removed?.Invoke(this, new RemovedLinkedListEventArgs<T>(value, false, "The passing element did not find. Removing is canceled."));
             return false;
         }
 
@@ -377,15 +271,12 @@ namespace LinkedList
         /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
-            if (ReferenceEquals(First, null)) yield break;
-
-            LinkedListNode<T> iNode = First;
-            while (!ReferenceEquals(iNode, Last))
+            LinkedListNode<T> Node = First;
+            while (Node != null)
             {
-                yield return iNode.Value;
-                iNode = iNode.Next;
+                yield return Node.Value;
+                Node = Node.Next;
             }
-            yield return Last.Value;
         }
 
         /// <summary>
@@ -402,51 +293,48 @@ namespace LinkedList
         /// </summary>
         /// <param name="beforeValue">The value before which to insert a new LinkedListNode T  containing value.</param>
         /// <param name="value">The value to add to the LinkedList T .</param>
-        public void Insert(T beforeValue, T value)
+        public bool Insert(T beforeValue, T value)
         {
-            if (ReferenceEquals(First, null)) return;
 
-            bool isContain = false;
+            LinkedListNode<T> matchingNode = FindAMatchingNode(beforeValue);
 
-            LinkedListNode<T> iNode = First;
-            while (!ReferenceEquals(iNode, Last))
+            if (matchingNode != null)
             {
-                if (ReferenceEquals(iNode.Value, beforeValue))
-                {
-                    isContain = true;
-                    break;
-                }
-                if (iNode.Value.GetType() != beforeValue.GetType())
-                {
-                    iNode = iNode.Next;
-                    continue;
-                }
-                if (iNode.Value.Equals(beforeValue))
-                {
-                    isContain = true;
-                    break;
-                }
-                iNode = iNode.Next;
-            }
+                LinkedListNode<T> newNode = new LinkedListNode<T>(value, matchingNode, matchingNode.Previous, this);
 
-            if (ReferenceEquals(Last.Value, beforeValue) && !isContain) isContain = true;
-            if (iNode.Value.GetType() != beforeValue.GetType() && !isContain) isContain = false;
-            if (iNode.Value.Equals(beforeValue) && !isContain) isContain = true;
+                var prev = matchingNode.Previous;
 
-            if (isContain)
-            {
-                LinkedListNode<T> newNode = new LinkedListNode<T>(value, iNode, iNode.Previous, this);
-                if (ReferenceEquals(First, iNode))
+                if (prev == null)
                 {
+                    First.Previous = newNode;
                     First = newNode;
-                    Count++;
-                    return;
+
                 }
-                iNode.Previous.Next = newNode;
-                iNode.Previous = newNode;
+                else
+                {
+                    prev.Next = newNode;
+                    prev = newNode;
+                }
                 Count++;
-                return;
+                return true;
             }
+            return false;
         }
-    }
+
+        private LinkedListNode<T> FindAMatchingNode(T value)
+        {
+            LinkedListNode<T> Node = First;
+            while (Node != null)
+            {
+                if (Equals(Node.Value, value))
+                    return Node;
+                Node = Node.Next;
+            }
+            return null;
+        }
+    } 
+
+
 }
+
+

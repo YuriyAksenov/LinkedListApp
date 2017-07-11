@@ -14,6 +14,14 @@ namespace LinkedList.Test
         }
 
         [Test]
+        public void NullTest()
+        {
+            var linkedList = new LinkedList<string>();
+            linkedList.Add("Test");
+            linkedList.Contains(null);
+        }
+
+        [Test]
         public void CountTest()
         {
             Assert.AreEqual(0, _linkedList.Count);
@@ -193,16 +201,16 @@ namespace LinkedList.Test
 
             for (int i = 1; i < 6; i++)
             {
-                _linkedList.Insert(i,i*10);
+               _linkedList.Insert(i,i*10);
             }
 
-            LinkedListNode<int> tempNode = _linkedList.First;
+            //LinkedListNode<int> tempNode = _linkedList.First;
 
-            for (int i = 0; i < 10; i++)
+            foreach (var item in _linkedList)
             {
-                s+=tempNode.Value+" ";
-                tempNode = tempNode.Next;
+                s += item.ToString() + " ";
             }
+
 
             Assert.AreEqual(trueS,s);
             Assert.AreEqual(10, _linkedList.Count);
@@ -213,15 +221,83 @@ namespace LinkedList.Test
         [Test]
         public void AddedTest()
         {
-            _linkedList.Added += delegate (object sender, LinkedListEventArgs e)
+            int addedValueInt = 5;
+            LinkedList<int> linkedListInt = new LinkedList<int>();
+            linkedListInt.Add(addedValueInt);
+
+            linkedListInt.Added += delegate (object sender, AddedLinkedListEventArgs<int> e)
             {
                 if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
                 {
                     Assert.Fail();
                 }
+
+                Assert.AreEqual(true, e.IsExecuted);
+                Assert.AreEqual(addedValueInt, e.Value);
+
             };
 
-            _linkedList.Add(5);
+            linkedListInt.Remove(addedValueInt);
+
+            string addedValueString = "5";
+
+            LinkedList<string> linkedListString = new LinkedList<string>();
+            linkedListString.Add(addedValueString);
+
+            linkedListString.Added += delegate (object sender, AddedLinkedListEventArgs<string> e)
+            {
+                if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
+
+                Assert.AreEqual(true, e.IsExecuted);
+                Assert.AreEqual(addedValueInt, e.Value);
+
+            };
+
+            linkedListString.Remove(addedValueString);
+        }
+
+        [Test]
+        public void RemovedTest()
+        {
+            int removedValueInt = 5;
+            LinkedList<int> linkedListInt = new LinkedList<int>();
+            linkedListInt.Add(removedValueInt);
+        
+            linkedListInt.Removed += delegate (object sender, RemovedLinkedListEventArgs<int> e)
+            {
+                if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
+
+                Assert.AreEqual(true, e.IsExecuted);
+                Assert.AreEqual(removedValueInt, e.Value);
+
+            };
+
+            linkedListInt.Remove(removedValueInt);
+
+            string removedValueString = "5";
+
+            LinkedList<string> linkedListString = new LinkedList<string>();
+            linkedListString.Add(removedValueString);
+
+            linkedListString.Removed += delegate (object sender, RemovedLinkedListEventArgs<string> e)
+            {
+                if (ReferenceEquals(null, sender) || ReferenceEquals(null, e))
+                {
+                    Assert.Fail();
+                }
+
+                Assert.AreEqual(true, e.IsExecuted);
+                Assert.AreEqual(removedValueString, e.Value);
+
+            };
+
+            linkedListString.Remove(removedValueString);
         }
 
         [Test]
@@ -238,19 +314,7 @@ namespace LinkedList.Test
             _linkedList.Clear();
         }
 
-        [Test]
-        public void RemovedTest()
-        {
-            _linkedList.Removed += delegate (object sender, LinkedListEventArgs e)
-            {
-                if(ReferenceEquals(null,sender) || ReferenceEquals(null, e))
-                {
-                    Assert.Fail();
-                }
-            };
-
-            _linkedList.Remove(5);
-        }
+        
 
     }
 }
