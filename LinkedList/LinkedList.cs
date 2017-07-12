@@ -174,16 +174,15 @@ namespace LinkedList
             if (null == First)
             {
                 First = newNode;
-                Last = newNode;
                 Count = 1;
-                Added?.Invoke(this, new AddedLinkedListEventArgs<T>(value, true, "The value was added into the LinkedList."));
-                return;
             }
-            Last.Next = newNode;
+            else
+            {
+                Last.Next = newNode;
+                Count++;
+            }
             Last = newNode;
-            Count++;
             Added?.Invoke(this, new AddedLinkedListEventArgs<T>(value, true, "The value was added into the LinkedList."));
-            return;
         }
 
         /// <summary>
@@ -194,9 +193,7 @@ namespace LinkedList
             Count = 0;
             First = null;
             Last = null;
-            
             Cleared?.Invoke(this, new LinkedListEventArgs(true, "The LinkedList was cleared."));
-            return;
         }
 
         /// <summary>
