@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 
 namespace LinkedList.Test
 {
@@ -214,6 +215,32 @@ namespace LinkedList.Test
 
             Assert.AreEqual(trueS,s);
             Assert.AreEqual(10, _linkedList.Count);
+
+            s = "";
+
+            LinkedListNode<int> Node = _linkedList.First;
+
+            while (Node != null)
+            {
+                s += Node.Value.ToString() + " ";
+                Node = Node.Next;
+            }
+
+            Assert.AreEqual(trueS, s);
+
+            s = "";
+
+            Node = _linkedList.Last;
+
+            while (Node != null)
+            {
+                s += Node.Value.ToString() + " ";
+                Node = Node.Previous;
+            }
+            var trueSChars = trueS.Split(' ');
+            Array.Reverse(trueSChars);
+            trueS = string.Join(" ",trueSChars).Trim();
+            Assert.AreEqual(trueS, s.Trim());
         }
 
         

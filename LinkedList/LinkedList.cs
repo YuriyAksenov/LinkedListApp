@@ -297,9 +297,9 @@ namespace LinkedList
 
             if (matchingNode != null)
             {
-                LinkedListNode<T> newNode = new LinkedListNode<T>(value, matchingNode, matchingNode.Previous, this);
-
                 var prev = matchingNode.Previous;
+
+                LinkedListNode<T> newNode = new LinkedListNode<T>(value, matchingNode, prev, this);
 
                 if (prev == null)
                 {
@@ -309,6 +309,7 @@ namespace LinkedList
                 }
                 else
                 {
+                    matchingNode.Previous = newNode;
                     prev.Next = newNode;
                     prev = newNode;
                 }
